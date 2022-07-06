@@ -21,7 +21,7 @@ async function server() {
 
         app.post('/user/login/adduser', async (req, res) => {
             const user = req.body;
-            const query = {uid: user.uid};
+            const query = { uid: user.uid };
             let result = undefined;
             result = await usersCollection.findOne(query);
             if (result) {
@@ -34,10 +34,16 @@ async function server() {
         });
 
         // GET ALL USERS INFORMATIONS API
-        app.get('/programmerNetwork/users', async (req, res) => {
-            const cursor = usersCollection.find({});
-            const users = await cursor.toArray();
-            res.send(users);
+        app.get('/programmerNetwork/users/:uid', async (req, res) => {
+            const uid = req.params.uid
+            const query = { uid: uid };
+            const result = await usersCollection.findOne(query);
+            if(uid && result) {
+                const cursor = usersCollection.find({});
+                const allUsers = await cursor.toArray();
+                const users = allUsers.filter((user) => user.uid !== uid);
+                res.send(users);
+            }
         });
         
 
